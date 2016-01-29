@@ -57,12 +57,6 @@ public class Hex2bin {
      *
      * {target} is target BIN file name
      *
-     * {address_from} is start address e.g. 0x1D000000 or min
-     *
-     * {address_to} is end address e.g. 0x1D07FFFF or max
-     *
-     * if no address_from and address_to is specified, maximum range is used
-     *
      * @param args the command line arguments
      */
     public static void main(String[] args) {
