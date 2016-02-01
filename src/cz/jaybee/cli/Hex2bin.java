@@ -83,13 +83,14 @@ public class Hex2bin {
             parser.setDataListener(rangeDetector);
             // Effectively fills parser.dataListener with arrayList of regions (does nothing with data)
             parser.parse();
-            //not sure what this is doing
+            //not sure what this is doing here
             is.getChannel().position(0);
             Region outputRegion = rangeDetector.getFullRangeRegion();
 
             // 2nd iteration - actual write of the output
             BinWriter writer = new BinWriter(outputRegion, os, minimize);
             parser.setDataListener(writer);
+            //DataListener now a BinWriter (parser.process is different)
             parser.parse();
 
             // print statistics
