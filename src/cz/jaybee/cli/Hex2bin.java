@@ -81,17 +81,11 @@ public class Hex2bin {
             // 1st iteration - calculate maximum output range
             RangeDetector rangeDetector = new RangeDetector();
             parser.setDataListener(rangeDetector);
+            // Effectively fills parser.dataListener with arrayList of regions (does nothing with data)
             parser.parse();
+            //not sure what this is doing
             is.getChannel().position(0);
             Region outputRegion = rangeDetector.getFullRangeRegion();
-
-            // if address parameter is "max", calculate maximum memory region
-            if (!("min".equals(dataFrom))) {
-                outputRegion.setAddressStart(Long.parseLong(dataFrom.substring(2), 16));
-            }
-            if (!("max".equals(dataTo))) {
-                outputRegion.setAddressEnd(Long.parseLong(dataTo.substring(2), 16));
-            }
 
             // 2nd iteration - actual write of the output
             BinWriter writer = new BinWriter(outputRegion, os, minimize);

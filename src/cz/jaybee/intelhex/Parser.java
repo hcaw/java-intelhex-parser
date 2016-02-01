@@ -137,12 +137,12 @@ public class Parser {
         // build full address
         long addr = record.address | upperAddress;
         switch (record.type) {
-            case DATA:
+            case DATA: //Just creates memory regions (doesn't do anything with data)
                 if (dataListener != null) {
                     dataListener.data(addr, record.data);
                 }
                 break;
-            case EOF: //USED ONCE AT EOF
+            case EOF: //USED ONCE AT EOF, just compacts mem regions
                 if (dataListener != null) {
                     dataListener.eof();
                 }
