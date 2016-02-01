@@ -51,8 +51,6 @@ public class Hex2bin {
      *
      * Hex2bin {source} {target}
      *
-     * Hex2bin {source} {target} {address_from} {address_to}
-     *
      * {source} is source Intel HEX file name
      *
      * {target} is target BIN file name
@@ -70,13 +68,8 @@ public class Hex2bin {
             System.out.println("    full address range of app.hex");
             System.out.println("        hex2bin app.hex app.bin");
             return;
-        }
-
-        if (args.length >= 1) {
+        } else {
             fileIn = args[0];
-        }
-
-        if (args.length >= 2) {
             fileOut = args[1];
         }
 

@@ -142,13 +142,13 @@ public class Parser {
                     dataListener.data(addr, record.data);
                 }
                 break;
-            case EOF:
+            case EOF: //USED ONCE AT EOF
                 if (dataListener != null) {
                     dataListener.eof();
                 }
                 eof = true;
                 break;
-            case EXT_LIN:
+            case EXT_LIN: //USED TO SET UPPER 2 BYTES OF ADDRESS FOR DATA
                 if (record.length == 2) {
                     upperAddress = ((record.data[0] & 0xFF) << 8) + (record.data[1] & 0xFF);
                     upperAddress <<= 16; // ELA is bits 16-31 of the segment base address (SBA), so shift left 16 bits
@@ -157,7 +157,7 @@ public class Parser {
                 }
 
                 break;
-            case EXT_SEG:
+            case EXT_SEG: //NOT USED
                 if (record.length == 2) {
                     upperAddress = ((record.data[0] & 0xFF) << 8) + (record.data[1] & 0xFF);
                     upperAddress <<= 4; // ESA is bits 4-19 of the segment base address (SBA), so shift left 4 bits
@@ -165,7 +165,7 @@ public class Parser {
                     throw new IntelHexException("Invalid EXT_SEG record (" + recordIdx + ")");
                 }
                 break;
-            case START_LIN:
+            case START_LIN:  //NOT USED
                 if (record.length == 4) {
                     startAddress = 0;
                     for (byte c : record.data) {
@@ -176,7 +176,7 @@ public class Parser {
                     throw new IntelHexException("Invalid START_LIN record at line #" + recordIdx + " " + record);
                 }
                 break;
-            case START_SEG:
+            case START_SEG: //NOT USED
                 if (record.length == 4) {
                     startAddress = 0;
                     for (byte c : record.data) {
