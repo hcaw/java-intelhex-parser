@@ -24,7 +24,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 package cz.jaybee.intelhex;
-
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Class to hold one Intel HEX record - one line in the file
  * @author Jan Breuer
@@ -33,7 +34,7 @@ public class Record {
 
     public int length;
     public RecordType type;
-    public byte[] contents;
+    public List<Byte> contents;
 
     /**
      * Convert the record to pretty string

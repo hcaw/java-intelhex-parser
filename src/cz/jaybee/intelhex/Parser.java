@@ -91,7 +91,6 @@ public class Parser {
         }
 
         int lineLength = record.length();
-        //this can only be calculated after we have added the control characters!
         byte[] hexRecord = new byte[lineLength / 2];
 
         // sum of all bytes modulo 256 (including checksum) shuld be 0
@@ -120,17 +119,23 @@ public class Parser {
         }
 
         //Now using a for loop, skip through each byte to check for imitated control chars, and prepend with <DLE> (0x10)
-        byte[] newHexRecord....
-        int newLength = result.length;
+        //clone array to arraylist
+        //add all the bits in, increasing length as you go
+        //clone back to an array
+        List<Byte> tempArrayList = new ArrayList<Byte>();
+        int newLength = hexRecord.length;
         //Add characters to LinkedList (or similar) as you go, then get LL length, create new hexRecord[] and copy over to array
-        for(int i = 0;i<result.length;i++) {
+        for(int i = 0;i<hexRecord.length;i++) {
             if(hexRecord[i] == 0x01 || hexRecord[i] == 0x04 || hexRecord[i] == 0x10) {
-                
+                tempArrayList.add(0x10); //CHECK SYNTAX
                 newLength++;
-            } else {
-
             }
+            tempArrayList.add(hexRecord[i]);
         }
+        tempArrayList.add(0,0x01); //Add <SOH>
+        tempArrayList.add(0x04); //Add <EOT>
+
+        
 
         // length is OK, copy data
         // result.data = new byte[result.length]; //NOT REALLY NEEDED
