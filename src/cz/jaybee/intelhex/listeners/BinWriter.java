@@ -31,6 +31,8 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Binary file writer
@@ -41,7 +43,7 @@ public class BinWriter implements DataListener {
 
     private final OutputStream destination;
     private final List<Byte> tempBuff;
-    private final Byte[] buffer;
+    private byte[] buffer;
 
     public BinWriter(OutputStream destination) {
         this.destination = destination;
@@ -57,7 +59,17 @@ public class BinWriter implements DataListener {
 
     @Override
     public void eof() {       
-        buffer = new Byte[tempBuff.size()];
-        destination.write(buffer);
+        buffer = new byte[tempBuff.size()];
+        //need to use toArray here with Byte.bytevalue()
+        int i = 0;
+        for(Byte b : tempBuff) {
+            buffer[i++] = b.byteValue();
+        }
+        try {
+            destination.write(buffer);
+        } catch (IOException ex) {
+            Logger.getLogger(BinWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 }

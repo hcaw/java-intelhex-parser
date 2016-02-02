@@ -41,7 +41,7 @@ public interface DataListener {
      * @param address
      * @param data
      */
-    public void data(long address, byte[] data);
+    public void data(Byte[] data);
 
     /**
      * After eof is detected in the file, this listener method is called

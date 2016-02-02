@@ -146,7 +146,7 @@ public class Parser {
      */
     private void processRecord(Record record) {
         dataListener.data(record.contents);
-        if(record.type == EOF) {
+        if(record.type == RecordType.EOF) {
             dataListener.eof();
             eof = true;
         }
