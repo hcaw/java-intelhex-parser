@@ -91,6 +91,7 @@ public class Parser {
         }
 
         int lineLength = record.length();
+        //this can only be calculated after we have added the control characters!
         byte[] hexRecord = new byte[lineLength / 2];
 
         // sum of all bytes modulo 256 (including checksum) shuld be 0
@@ -111,18 +112,32 @@ public class Parser {
         if ((result.length + 5) != hexRecord.length) {
             throw new IntelHexException("Invalid record length (" + recordIdx + ")");
         }
-        // length is OK, copy data
-        result.data = new byte[result.length];
-        System.arraycopy(hexRecord, 4, result.data, 0, result.length);
-
-        // build lower part of data address
-        result.address = ((hexRecord[1] & 0xFF) << 8) + (hexRecord[2] & 0xFF);
 
         // determine record type
         result.type = RecordType.fromInt(hexRecord[3] & 0xFF);
         if (result.type == RecordType.UNKNOWN) {
             throw new IntelHexException("Unsupported record type " + (hexRecord[3] & 0xFF) + " (" + recordIdx + ")");
         }
+
+        //Now using a for loop, skip through each byte to check for imitated control chars, and prepend with <DLE> (0x10)
+        byte[] newHexRecord....
+        int newLength = result.length;
+        //Add characters to LinkedList (or similar) as you go, then get LL length, create new hexRecord[] and copy over to array
+        for(int i = 0;i<result.length;i++) {
+            if(hexRecord[i] == 0x01 || hexRecord[i] == 0x04 || hexRecord[i] == 0x10) {
+                
+                newLength++;
+            } else {
+
+            }
+        }
+
+        // length is OK, copy data
+        // result.data = new byte[result.length]; //NOT REALLY NEEDED
+        // System.arraycopy(hexRecord, 4, result.data, 0, result.length);
+
+        // build lower part of data address
+        // result.address = ((hexRecord[1] & 0xFF) << 8) + (hexRecord[2] & 0xFF); //NOT REALLY NEEDED
 
         return result;
     }

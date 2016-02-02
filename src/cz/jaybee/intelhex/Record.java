@@ -32,29 +32,28 @@ package cz.jaybee.intelhex;
 public class Record {
 
     public int length;
-    public int address;
     public RecordType type;
-    public byte[] data;
+    public byte[] contents;
 
     /**
      * Convert the record to pretty string
      *
      * @return
      */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+    // @Override
+    // public String toString() {
+    //     StringBuilder sb = new StringBuilder();
 
-        sb.append(type);
-        sb.append(" @");
-        sb.append(String.format("0x%04X", address));
-        sb.append(" [");
-        for (byte c : data) {
-            sb.append(String.format("0x%02X", c));
-            sb.append(" ");
-        }
-        sb.setLength(sb.length() - 1);
-        sb.append("]");
-        return sb.toString();
-    }
+    //     sb.append(type);
+    //     sb.append(" @");
+    //     sb.append(String.format("0x%04X", address));
+    //     sb.append(" [");
+    //     for (byte c : data) {
+    //         sb.append(String.format("0x%02X", c));
+    //         sb.append(" ");
+    //     }
+    //     sb.setLength(sb.length() - 1);
+    //     sb.append("]");
+    //     return sb.toString();
+    // }
 }

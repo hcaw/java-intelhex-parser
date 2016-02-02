@@ -79,13 +79,13 @@ public class Hex2bin {
             Parser parser = new Parser(is);
 
             // 1st iteration - calculate maximum output range
-            RangeDetector rangeDetector = new RangeDetector();
-            parser.setDataListener(rangeDetector);
+            // RangeDetector rangeDetector = new RangeDetector();
+            // parser.setDataListener(rangeDetector);
             // Effectively fills parser.dataListener with arrayList of regions (does nothing with data)
-            parser.parse();
+            // parser.parse();
             //not sure what this is doing here
-            is.getChannel().position(0);
-            Region outputRegion = rangeDetector.getFullRangeRegion();
+            // is.getChannel().position(0);
+            // Region outputRegion = rangeDetector.getFullRangeRegion();
 
             // 2nd iteration - actual write of the output
             BinWriter writer = new BinWriter(outputRegion, os);
