@@ -25,6 +25,8 @@
  */
 package cz.jaybee.intelhex;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.*;
 
 /**
@@ -41,8 +43,6 @@ public class Parser {
     private static final int HEX = 16;
     private boolean eof = false;
     private int recordIdx = 0;
-    private long upperAddress = 0;
-    private long startAddress = 0;
 
     /**
      * Constructor of the parser with reader
@@ -107,8 +107,8 @@ public class Parser {
         }
 
         // if the length field does not correspond with line length
-        result.length = hexRecord[0];
-        if ((result.length + 5) != hexRecord.length) {
+        int dataLength = hexRecord[0];
+        if ((dataLength + 5) != hexRecord.length) {
             throw new IntelHexException("Invalid record length (" + recordIdx + ")");
         }
 
@@ -118,31 +118,23 @@ public class Parser {
             throw new IntelHexException("Unsupported record type " + (hexRecord[3] & 0xFF) + " (" + recordIdx + ")");
         }
 
-        //Now using a for loop, skip through each byte to check for imitated control chars, and prepend with <DLE> (0x10)
-        //clone array to arraylist
-        //add all the bits in, increasing length as you go
-        //clone back to an array
         List<Byte> tempArrayList = new ArrayList<Byte>();
-        int newLength = hexRecord.length;
-        //Add characters to LinkedList (or similar) as you go, then get LL length, create new hexRecord[] and copy over to array
+        Byte dle = 0x10;
+        Byte soh = 0x01;
+        Byte eot = 0x04;
         for(int i = 0;i<hexRecord.length;i++) {
             if(hexRecord[i] == 0x01 || hexRecord[i] == 0x04 || hexRecord[i] == 0x10) {
-                tempArrayList.add(0x10); //CHECK SYNTAX
-                newLength++;
+                tempArrayList.add(dle); //CHECK SYNTAX
             }
             tempArrayList.add(hexRecord[i]);
         }
-        tempArrayList.add(0,0x01); //Add <SOH>
-        tempArrayList.add(0x04); //Add <EOT>
+        tempArrayList.add(0,soh); //Add <SOH>
+        tempArrayList.add(eot); //Add <EOT>
 
-        
+        Byte[] newHexRecord = new Byte[tempArrayList.size()];
+        newHexRecord = tempArrayList.toArray(newHexRecord);
 
-        // length is OK, copy data
-        // result.data = new byte[result.length]; //NOT REALLY NEEDED
-        // System.arraycopy(hexRecord, 4, result.data, 0, result.length);
-
-        // build lower part of data address
-        // result.address = ((hexRecord[1] & 0xFF) << 8) + (hexRecord[2] & 0xFF); //NOT REALLY NEEDED
+        result.contents = newHexRecord;
 
         return result;
     }
@@ -151,76 +143,13 @@ public class Parser {
      * Process parsed record, copute correct address, emit events
      *
      * @param record
-     * @throws IntelHexException
      */
-    private void processRecord(Record record) throws IntelHexException {
-        // build full address
-        long addr = record.address | upperAddress;
-        switch (record.type) {
-            case DATA: //Just creates memory regions (doesn't do anything with data)
-                if (dataListener != null) {
-                    dataListener.data(addr, record.data);
-                }
-                break;
-            case EOF: //USED ONCE AT EOF, just compacts mem regions
-                if (dataListener != null) {
-                    dataListener.eof();
-                }
-                eof = true;
-                break;
-            case EXT_LIN: //USED TO SET UPPER 2 BYTES OF ADDRESS FOR DATA
-                if (record.length == 2) {
-                    upperAddress = ((record.data[0] & 0xFF) << 8) + (record.data[1] & 0xFF);
-                    upperAddress <<= 16; // ELA is bits 16-31 of the segment base address (SBA), so shift left 16 bits
-                } else {
-                    throw new IntelHexException("Invalid EXT_LIN record (" + recordIdx + ")");
-                }
-
-                break;
-            case EXT_SEG: //NOT USED
-                if (record.length == 2) {
-                    upperAddress = ((record.data[0] & 0xFF) << 8) + (record.data[1] & 0xFF);
-                    upperAddress <<= 4; // ESA is bits 4-19 of the segment base address (SBA), so shift left 4 bits
-                } else {
-                    throw new IntelHexException("Invalid EXT_SEG record (" + recordIdx + ")");
-                }
-                break;
-            case START_LIN:  //NOT USED
-                if (record.length == 4) {
-                    startAddress = 0;
-                    for (byte c : record.data) {
-                        startAddress = startAddress << 8;
-                        startAddress |= (c & 0xFF);
-                    }
-                } else {
-                    throw new IntelHexException("Invalid START_LIN record at line #" + recordIdx + " " + record);
-                }
-                break;
-            case START_SEG: //NOT USED
-                if (record.length == 4) {
-                    startAddress = 0;
-                    for (byte c : record.data) {
-                        startAddress = startAddress << 8;
-                        startAddress |= (c & 0xFF);
-                    }
-                } else {
-                    throw new IntelHexException("Invalid START_SEG record at line #" + recordIdx + " " + record);
-                }
-                break;
-            case UNKNOWN:
-                break;
+    private void processRecord(Record record) {
+        dataListener.data(record.contents);
+        if(record.type == EOF) {
+            dataListener.eof();
+            eof = true;
         }
-
-    }
-
-    /**
-     * Return program start address/reset address. May not be at the beggining
-     * of the data.
-     *
-     * @return Start address
-     */
-    public long getStartAddress() {
-        return startAddress;
     }
 
     /**
@@ -232,8 +161,6 @@ public class Parser {
     public void parse() throws IntelHexException, IOException {
         eof = false;
         recordIdx = 1;
-        upperAddress = 0;
-        startAddress = 0;
         String recordStr;
 
         while ((recordStr = reader.readLine()) != null) {

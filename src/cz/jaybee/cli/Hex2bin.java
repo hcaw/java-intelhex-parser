@@ -27,8 +27,6 @@ package cz.jaybee.cli;
 
 import cz.jaybee.intelhex.IntelHexException;
 import cz.jaybee.intelhex.Parser;
-import cz.jaybee.intelhex.Region;
-import cz.jaybee.intelhex.listeners.RangeDetector;
 import cz.jaybee.intelhex.listeners.BinWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -75,31 +73,10 @@ public class Hex2bin {
 
         try (FileInputStream is = new FileInputStream(fileIn)) {
             OutputStream os = new FileOutputStream(fileOut);
-            // init parser
             Parser parser = new Parser(is);
-
-            // 1st iteration - calculate maximum output range
-            // RangeDetector rangeDetector = new RangeDetector();
-            // parser.setDataListener(rangeDetector);
-            // Effectively fills parser.dataListener with arrayList of regions (does nothing with data)
-            // parser.parse();
-            //not sure what this is doing here
-            // is.getChannel().position(0);
-            // Region outputRegion = rangeDetector.getFullRangeRegion();
-
-            // 2nd iteration - actual write of the output
-            BinWriter writer = new BinWriter(outputRegion, os);
+            BinWriter writer = new BinWriter(os);
             parser.setDataListener(writer);
-            //DataListener now a BinWriter (parser.process is different)
             parser.parse();
-
-            // print statistics
-            System.out.printf("Program start address 0x%08X\r\n", parser.getStartAddress());
-            System.out.println("Memory regions: ");
-            System.out.println(rangeDetector.getMemoryRegions());
-
-            System.out.print("Written output: ");
-            System.out.println(outputRegion);
 
         } catch (IntelHexException | IOException ex) {
             Logger.getLogger(Hex2bin.class.getName()).log(Level.SEVERE, null, ex);

@@ -26,13 +26,11 @@
 package cz.jaybee.intelhex.listeners;
 
 import cz.jaybee.intelhex.DataListener;
-import cz.jaybee.intelhex.MemoryRegions;
-import cz.jaybee.intelhex.Region;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Binary file writer
@@ -41,51 +39,25 @@ import java.util.logging.Logger;
  */
 public class BinWriter implements DataListener {
 
-    private final Region outputRegion;
     private final OutputStream destination;
-    private final byte[] buffer;
-    private final MemoryRegions regions;
-    private long maxAddress;
+    private final List<Byte> tempBuff;
+    private final Byte[] buffer;
 
-    public BinWriter(Region outputRegion, OutputStream destination) {
-        this.outputRegion = outputRegion;
+    public BinWriter(OutputStream destination) {
         this.destination = destination;
-        this.buffer = new byte[(int) (outputRegion.getLength())];
-        Arrays.fill(buffer, (byte) 0xFF);
-        regions = new MemoryRegions();
-        //set to start as increases as data is written to buffer
-        maxAddress = outputRegion.getAddressStart();
+        tempBuff = new ArrayList<Byte>();
     }
 
     @Override
-    public void data(long address, byte[] data) {
-        regions.add(address, data.length);
-
-        if ((address >= outputRegion.getAddressStart()) && (address <= outputRegion.getAddressEnd())) {
-            int length = data.length;
-            if ((address + length) > outputRegion.getAddressEnd()) {
-                length = (int) (outputRegion.getAddressEnd() - address + 1);
-            }
-            System.arraycopy(data, 0, buffer, (int) (address - outputRegion.getAddressStart()), length);
-            
-            if (maxAddress < (address + data.length -1)) {
-                maxAddress = address + data.length - 1;
-            }
+    public void data(Byte[] data) {
+        for(int i = 0;i<data.length;i++) {
+            tempBuff.add(data[i]);
         }
     }
 
     @Override
     public void eof() {       
-        try {
-            //removed an if !minimized from this location
-            maxAddress = outputRegion.getAddressEnd();
-            destination.write(buffer, 0, (int)(maxAddress - outputRegion.getAddressStart() + 1));
-        } catch (IOException ex) {
-            Logger.getLogger(BinWriter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        buffer = new Byte[tempBuff.size()];
+        destination.write(buffer);
     }
-    
-    public MemoryRegions getMemoryRegions() {
-        return regions;
-    }    
 }

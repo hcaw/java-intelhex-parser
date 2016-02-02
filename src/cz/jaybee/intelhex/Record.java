@@ -24,37 +24,35 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 package cz.jaybee.intelhex;
-import java.util.ArrayList;
-import java.util.List;
+
 /**
  * Class to hold one Intel HEX record - one line in the file
  * @author Jan Breuer
  */
 public class Record {
 
-    public int length;
     public RecordType type;
-    public List<Byte> contents;
+    public Byte[] contents;
 
     /**
      * Convert the record to pretty string
      *
      * @return
      */
-    // @Override
-    // public String toString() {
-    //     StringBuilder sb = new StringBuilder();
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
 
-    //     sb.append(type);
-    //     sb.append(" @");
-    //     sb.append(String.format("0x%04X", address));
-    //     sb.append(" [");
-    //     for (byte c : data) {
-    //         sb.append(String.format("0x%02X", c));
-    //         sb.append(" ");
-    //     }
-    //     sb.setLength(sb.length() - 1);
-    //     sb.append("]");
-    //     return sb.toString();
-    // }
+        sb.append("Type: ");
+        sb.append(type);
+        sb.append(" Contents:");
+        sb.append(" [");
+        for (Byte c : contents) {
+            sb.append(String.format("0x%02X", c));
+            sb.append(" ");
+        }
+        sb.setLength(sb.length() - 1);
+        sb.append("]");
+        return sb.toString();
+    }
 }
