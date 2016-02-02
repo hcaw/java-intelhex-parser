@@ -46,15 +46,14 @@ public class BinWriter implements DataListener {
     private final byte[] buffer;
     private final MemoryRegions regions;
     private long maxAddress;
-    private final boolean minimize;
 
-    public BinWriter(Region outputRegion, OutputStream destination, boolean minimize) {
+    public BinWriter(Region outputRegion, OutputStream destination) {
         this.outputRegion = outputRegion;
         this.destination = destination;
-        this.minimize = minimize;
         this.buffer = new byte[(int) (outputRegion.getLength())];
         Arrays.fill(buffer, (byte) 0xFF);
         regions = new MemoryRegions();
+        //set to start as increases as data is written to buffer
         maxAddress = outputRegion.getAddressStart();
     }
 
@@ -78,9 +77,8 @@ public class BinWriter implements DataListener {
     @Override
     public void eof() {       
         try {
-            if (!minimize) {
-                maxAddress = outputRegion.getAddressEnd();
-            }
+            //removed an if !minimized from this location
+            maxAddress = outputRegion.getAddressEnd();
             destination.write(buffer, 0, (int)(maxAddress - outputRegion.getAddressStart() + 1));
         } catch (IOException ex) {
             Logger.getLogger(BinWriter.class.getName()).log(Level.SEVERE, null, ex);

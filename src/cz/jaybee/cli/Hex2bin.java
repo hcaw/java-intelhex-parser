@@ -88,7 +88,7 @@ public class Hex2bin {
             Region outputRegion = rangeDetector.getFullRangeRegion();
 
             // 2nd iteration - actual write of the output
-            BinWriter writer = new BinWriter(outputRegion, os, minimize);
+            BinWriter writer = new BinWriter(outputRegion, os);
             parser.setDataListener(writer);
             //DataListener now a BinWriter (parser.process is different)
             parser.parse();
